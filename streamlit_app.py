@@ -4,6 +4,8 @@ import geopandas as gpd
 from pyproj import Transformer
 import leafmap.foliumap as leafmap
 from PIL import Image
+import requests
+from io import BytesIO
 import base64
 import folium
 from folium.plugins import HeatMap, TimestampedGeoJson, LocateControl
@@ -63,9 +65,12 @@ def convert_to_geojson(df):
         return None, None
 
 # Função para adicionar o logo ao mapa
-def add_logo_to_map(m, logo_path):
-    with open(logo_path, "rb") as image_file:
-        encoded_string = base64.b64encode(image_file.read()).decode()
+def add_logo_to_map(m, logo_url):
+    response = requests.get(logo_url)
+    image = Image.open(BytesIO(response.content))
+    buffered = BytesIO()
+    image.save(buffered, format="PNG")
+    encoded_string = base64.b64encode(buffered.getvalue()).decode()
 
     logo_html = f'''
     <div style="position: fixed; 
@@ -80,7 +85,7 @@ def add_logo_to_map(m, logo_path):
     m.get_root().html.add_child(logo_element)
 
 # Função para criar o mapa com evolução temporal
-def create_map(gdf, basemap_option, logo_path, legend_column=None, color_map=None, generate_heatmap=False, generate_time_series=False):
+def create_map(gdf, basemap_option, logo_url, legend_column=None, color_map=None, generate_heatmap=False, generate_time_series=False):
     m = leafmap.Map(center=[gdf['Latitude'].mean(), gdf['Longitude'].mean()], zoom=10)
     
     if basemap_option == "Google Maps":
@@ -96,7 +101,7 @@ def create_map(gdf, basemap_option, logo_path, legend_column=None, color_map=Non
     else:
         m.add_basemap("openstreetmap")
 
-    add_logo_to_map(m, logo_path)
+    add_logo_to_map(m, logo_url)
 
     LocateControl(auto_start=False).add_to(m)
 
@@ -222,15 +227,16 @@ def create_statistics_chart(df, column_name, color_map):
 # Título da aplicação
 st.title("WebGIS Interativo com Conversão para GeoJSON")
 
-# Caminho para o logo da empresa
-logo_path = r"C:\Users\Tiago Holanda NMC\Desktop\MAC - Mapas\logo\logo.png"
+# Caminho para o logo da empresa (versão raw do GitHub)
+logo_url = "https://raw.githubusercontent.com/Tiagofholanda/inventory-tracker/3eb108c7af00bd74737bf52a26a8e772da3badda/logo/logo.png"
 
 # Adicionar o logo na interface do Streamlit
-image = Image.open(logo_path)
+response = requests.get(logo_url)
+image = Image.open(BytesIO(response.content))
 st.image(image, width=200)
 
-# Caminho para o arquivo Excel
-excel_file = r"C:\Users\Tiago Holanda NMC\Desktop\projeto\Dados\teste-poc\teste-heithor.xlsx"
+# Caminho para o arquivo Excel (versão raw do GitHub)
+excel_file = "https://raw.githubusercontent.com/Tiagofholanda/inventory-tracker/3eb108c7af00bd74737bf52a26a8e772da3badda/Dados/teste-heithor.xlsx"
 
 # Carregar os dados do arquivo Excel
 df = load_data(excel_file)
@@ -285,7 +291,7 @@ if df is not None:
             generate_heatmap = st.sidebar.checkbox("Gerar mapa de calor")
             generate_time_series = st.sidebar.checkbox("Gerar evolução temporal")
 
-            m = create_map(gdf, basemap_option, logo_path, legend_column=legend_column, color_map=color_map, generate_heatmap=generate_heatmap, generate_time_series=generate_time_series)
+            m = create_map(gdf, basemap_option, logo_url, legend_column=legend_column, color_map=color_map, generate_heatmap=generate_heatmap, generate_time_series=generate_time_series)
 
             m.add_geojson(geojson_file, layer_name="Dados GeoJSON")
 
