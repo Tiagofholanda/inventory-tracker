@@ -1,8 +1,8 @@
-streamlit==1.10.0
-pandas==1.3.3
-geopandas==0.9.0
-pyproj==3.0.1
-leafmap==0.5.3
-pillow==8.3.2
-folium==0.12.1
-plotly==5.3.1
+streamlit
+pandas
+geopandas
+pyproj
+leafmap
+pillow
+folium
+plotly
