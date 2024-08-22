@@ -1,5 +1,5 @@
 streamlit
-pandas==3.1.0'
+pandas==3.1.0
 geopandas
 pyproj
 leafmap
