@@ -6,3 +6,4 @@ leafmap
 pillow
 folium
 plotly
+openpyxl==3.0.10
