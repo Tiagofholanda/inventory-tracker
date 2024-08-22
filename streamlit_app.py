@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 import pandas as pd
 import geopandas as gpd
@@ -12,6 +13,9 @@ from folium.plugins import HeatMap, TimestampedGeoJson, LocateControl
 import plotly.express as px
 import plotly.graph_objects as go
 from datetime import datetime
+
+# Instalar a versão mais recente de openpyxl
+os.system('pip install --upgrade openpyxl')
 
 # Função para carregar os dados do Excel e corrigir coordenadas
 def load_data(file_path):
