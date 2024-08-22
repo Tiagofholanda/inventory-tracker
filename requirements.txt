@@ -1,2 +1,10 @@
 streamlit
 pandas
+geopandas
+leafmap
+folium
+pandas
+setuptools
+openpyxl
+plotly
+reportlab
